@@ -2131,6 +2131,7 @@
         "themeSystem": "System",
         "themeLight": "Light",
         "themeDark": "Dark",
+        "colorPalette": "Color palette",
         "wallModeLabel": "Wall mode",
         "wallModeHint": "Turns the home screen on this device into a calm display for a wall tablet: time, today's schedule, who's up today and the weather - large enough to read from two metres away, with nothing to operate. It dims during the night hours. Applies to this device only, not to the rest of the household.",
         "wallModeOn": "Wall mode on - visible under {{page}}.",

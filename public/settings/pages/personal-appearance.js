@@ -54,6 +54,14 @@ const THEME_OPTIONS = [
   { value: 'dark', icon: 'moon', labelKey: 'settings.themeDark' },
 ];
 
+const PALETTE_OPTIONS = [
+  { value: 'violet', label: 'Violet' },
+  { value: 'ocean', label: 'Ocean' },
+  { value: 'forest', label: 'Forest' },
+  { value: 'rose', label: 'Rose' },
+  { value: 'amber', label: 'Amber' },
+];
+
 const DATE_FORMATS = [
   ['mdy', 'MM/DD/YYYY'],
   ['dmy', 'DD.MM.YYYY'],
@@ -91,6 +99,11 @@ function safeStorageRemove(key) {
 
 function currentTheme() {
   return safeStorageGet('yuvomi-theme', 'system') || 'system';
+}
+
+function currentPalette() {
+  const stored = safeStorageGet('yuvomi-palette', 'violet');
+  return PALETTE_OPTIONS.some(({ value }) => value === stored) ? stored : 'violet';
 }
 
 function formatOptions(selected) {
@@ -463,6 +476,7 @@ function renderLoadError(container) {
  */
 function renderPage(container, preferences, isAdmin) {
   const theme = currentTheme();
+  const palette = currentPalette();
   const activeRegion = resolveRegion(preferences);
   const customHidden = isAdmin && activeRegion !== CUSTOM_REGION;
   container.replaceChildren();
@@ -488,6 +502,22 @@ function renderPage(container, preferences, isAdmin) {
                 return `<button type="button" class="segmented__item${on ? ' is-active' : ''}" role="radio"
                   data-tab-id="${value}" aria-checked="${on}" tabindex="${on ? '0' : '-1'}">
                   <i data-lucide="${icon}" class="icon-md" aria-hidden="true"></i>${esc(t(labelKey))}
+                </button>`;
+              }).join('')}
+            </div>
+          </div>
+        </div>
+        <div class="settings-setting-row settings-setting-row--stacked">
+          <div class="settings-setting-row__copy">
+            <div class="settings-setting-row__label">${esc(t('settings.colorPalette'))}</div>
+          </div>
+          <div class="settings-setting-row__control">
+            <div class="segmented settings-segmented settings-palette-segmented" id="palette-toggle" role="radiogroup" aria-label="${esc(t('settings.colorPalette'))}">
+              ${PALETTE_OPTIONS.map(({ value, label }) => {
+                const on = palette === value;
+                return `<button type="button" class="segmented__item palette-choice palette-choice--${value}${on ? ' is-active' : ''}" role="radio"
+                  data-tab-id="${value}" aria-checked="${on}" tabindex="${on ? '0' : '-1'}">
+                  <span class="palette-swatch" aria-hidden="true"></span>${label}
                 </button>`;
               }).join('')}
             </div>
@@ -636,6 +666,25 @@ function applyTheme(value) {
     document.documentElement.setAttribute('data-theme', value);
   } else {
     document.documentElement.removeAttribute('data-theme');
+  }
+}
+
+function applyPalette(value) {
+  if (!PALETTE_OPTIONS.some(({ value: option }) => option === value)) return;
+  safeStorageSet('yuvomi-palette', value);
+  if (window.yuvomi?.applyPalette) {
+    try {
+      window.yuvomi.applyPalette(value);
+      return;
+    } catch {
+      // Fall back to applying the palette directly when the router is unavailable.
+    }
+  }
+
+  if (value === 'violet') {
+    document.documentElement.removeAttribute('data-palette');
+  } else {
+    document.documentElement.setAttribute('data-palette', value);
   }
 }
 
@@ -933,6 +982,15 @@ function bindEvents(container, user) {
     activeClass: 'is-active',
     mode: 'select',
     onChange: (value) => applyTheme(value),
+  });
+
+  const paletteToggle = container.querySelector('#palette-toggle');
+  if (paletteToggle) attachSegmentIndicator(paletteToggle);
+  wireTablist(paletteToggle, {
+    activeId: currentPalette(),
+    activeClass: 'is-active',
+    mode: 'select',
+    onChange: (value) => applyPalette(value),
   });
 
   bindDeviceDisplay(container);

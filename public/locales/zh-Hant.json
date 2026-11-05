@@ -2021,6 +2021,7 @@
         "themeSystem": "跟隨系統",
         "themeLight": "淺色",
         "themeDark": "深色",
+        "colorPalette": "色彩主題",
         "wallModeLabel": "壁掛模式",
         "wallModeHint": "把本裝置的首頁變成適合牆上平板的安靜顯示：時間、今日安排、今天輪到誰以及天氣，字號大到兩米外也能看清，且無需操作。夜間時段會自動變暗。僅對本裝置生效，不影響家裡的其他裝置。",
         "wallModeOn": "壁掛模式已開啟，可在{{page}}中檢視。",

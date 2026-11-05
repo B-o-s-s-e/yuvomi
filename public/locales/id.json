@@ -2176,6 +2176,7 @@
         "themeSystem": "Sistem",
         "themeLight": "Terang",
         "themeDark": "Gelap",
+        "colorPalette": "Palet warna",
         "wallModeLabel": "Mode dinding",
         "wallModeHint": "Mengubah beranda di perangkat ini menjadi tampilan tenang untuk tablet dinding: jam, program hari ini, siapa yang bertugas, dan cuaca - cukup besar untuk dibaca dari dua meter, tanpa perlu disentuh. Pada jam malam tampilannya meredup. Hanya berlaku di perangkat ini, bukan perangkat lain di rumah.",
         "wallModeOn": "Mode dinding aktif, terlihat di {{page}}.",

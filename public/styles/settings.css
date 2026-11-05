@@ -2499,6 +2499,27 @@
   min-width: 0;
 }
 
+.settings-palette-segmented .segmented__item {
+  flex-direction: column;
+  gap: var(--space-0h);
+  padding: var(--space-1) var(--space-px);
+  font-size: var(--text-xs);
+}
+
+.palette-swatch {
+  width: 0.65rem;
+  height: 0.65rem;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--palette-swatch-color);
+}
+
+.palette-choice--violet { --palette-swatch-color: #6C3AED; }
+.palette-choice--ocean { --palette-swatch-color: #2563EB; }
+.palette-choice--forest { --palette-swatch-color: #15803D; }
+.palette-choice--rose { --palette-swatch-color: #BE123C; }
+.palette-choice--amber { --palette-swatch-color: #B45309; }
+
 /* --------------------------------------------------------
    Wochenstart-Vorschau (Kalender-Einstellungen)
    -------------------------------------------------------- */

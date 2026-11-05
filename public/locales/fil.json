@@ -2176,6 +2176,7 @@
         "themeSystem": "Sistema",
         "themeLight": "Maliwanag",
         "themeDark": "Madilim",
+        "colorPalette": "Paleta ng kulay",
         "wallModeLabel": "Wall mode",
         "wallModeHint": "Ginagawang tahimik na display ang home sa device na ito para sa tablet na nakasabit sa dingding: oras, programa ng araw, kung sino ang naka-duty at ang panahon - sapat na laki para mabasa mula dalawang metro, walang kailangang pindutin. Dumidilim ito sa oras ng gabi. Dito lang ito, hindi sa ibang device sa bahay.",
         "wallModeOn": "Naka-on ang wall mode, makikita sa {{page}}.",

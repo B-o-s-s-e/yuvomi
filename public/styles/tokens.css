@@ -3053,3 +3053,142 @@
     --color-text-tertiary:  var(--neutral-700);
   }
 }
+
+/* User-selectable accent palettes. The default Yuvomi violet is the base
+ * palette; dark variants mirror the contrast-safe dark-mode accent tokens. */
+@media screen {
+  :root[data-palette="ocean"] {
+    --_color-accent: #2563EB;
+    --_color-accent-hover: #1D4ED8;
+    --_color-accent-secondary: #60A5FA;
+    --_color-accent-light: #EFF6FF;
+    --_color-accent-subtle: #DBEAFE;
+    --_color-btn-primary: #2563EB;
+    --_color-btn-primary-hover: #1D4ED8;
+    --_family-overview: #2563EB;
+  }
+
+  :root[data-palette="forest"] {
+    --_color-accent: #15803D;
+    --_color-accent-hover: #166534;
+    --_color-accent-secondary: #4ADE80;
+    --_color-accent-light: #F0FDF4;
+    --_color-accent-subtle: #DCFCE7;
+    --_color-btn-primary: #15803D;
+    --_color-btn-primary-hover: #166534;
+    --_family-overview: #15803D;
+  }
+
+  :root[data-palette="rose"] {
+    --_color-accent: #BE123C;
+    --_color-accent-hover: #9F1239;
+    --_color-accent-secondary: #FB7185;
+    --_color-accent-light: #FFF1F2;
+    --_color-accent-subtle: #FFE4E6;
+    --_color-btn-primary: #BE123C;
+    --_color-btn-primary-hover: #9F1239;
+    --_family-overview: #BE123C;
+  }
+
+  :root[data-palette="amber"] {
+    --_color-accent: #B45309;
+    --_color-accent-hover: #92400E;
+    --_color-accent-secondary: #FBBF24;
+    --_color-accent-light: #FFFBEB;
+    --_color-accent-subtle: #FEF3C7;
+    --_color-btn-primary: #B45309;
+    --_color-btn-primary-hover: #92400E;
+    --_family-overview: #B45309;
+  }
+
+  :root[data-theme="dark"][data-palette="ocean"] {
+    --_color-accent: #93C5FD;
+    --_color-accent-hover: #BFDBFE;
+    --_color-accent-secondary: #60A5FA;
+    --_color-accent-light: #172554;
+    --_color-accent-subtle: #1E3A8A;
+    --_color-btn-primary: #1D4ED8;
+    --_color-btn-primary-hover: #1E40AF;
+    --_family-overview: #93C5FD;
+  }
+
+  :root[data-theme="dark"][data-palette="forest"] {
+    --_color-accent: #86EFAC;
+    --_color-accent-hover: #BBF7D0;
+    --_color-accent-secondary: #4ADE80;
+    --_color-accent-light: #052E16;
+    --_color-accent-subtle: #14532D;
+    --_color-btn-primary: #166534;
+    --_color-btn-primary-hover: #14532D;
+    --_family-overview: #86EFAC;
+  }
+
+  :root[data-theme="dark"][data-palette="rose"] {
+    --_color-accent: #FDA4AF;
+    --_color-accent-hover: #FECDD3;
+    --_color-accent-secondary: #FB7185;
+    --_color-accent-light: #4C0519;
+    --_color-accent-subtle: #881337;
+    --_color-btn-primary: #9F1239;
+    --_color-btn-primary-hover: #881337;
+    --_family-overview: #FDA4AF;
+  }
+
+  :root[data-theme="dark"][data-palette="amber"] {
+    --_color-accent: #FCD34D;
+    --_color-accent-hover: #FDE68A;
+    --_color-accent-secondary: #FBBF24;
+    --_color-accent-light: #451A03;
+    --_color-accent-subtle: #78350F;
+    --_color-btn-primary: #92400E;
+    --_color-btn-primary-hover: #78350F;
+    --_family-overview: #FCD34D;
+  }
+
+}
+
+@media screen and (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"])[data-palette="ocean"] {
+    --_color-accent: #93C5FD;
+    --_color-accent-hover: #BFDBFE;
+    --_color-accent-secondary: #60A5FA;
+    --_color-accent-light: #172554;
+    --_color-accent-subtle: #1E3A8A;
+    --_color-btn-primary: #1D4ED8;
+    --_color-btn-primary-hover: #1E40AF;
+    --_family-overview: #93C5FD;
+  }
+
+  :root:not([data-theme="light"])[data-palette="forest"] {
+    --_color-accent: #86EFAC;
+    --_color-accent-hover: #BBF7D0;
+    --_color-accent-secondary: #4ADE80;
+    --_color-accent-light: #052E16;
+    --_color-accent-subtle: #14532D;
+    --_color-btn-primary: #166534;
+    --_color-btn-primary-hover: #14532D;
+    --_family-overview: #86EFAC;
+  }
+
+  :root:not([data-theme="light"])[data-palette="rose"] {
+    --_color-accent: #FDA4AF;
+    --_color-accent-hover: #FECDD3;
+    --_color-accent-secondary: #FB7185;
+    --_color-accent-light: #4C0519;
+    --_color-accent-subtle: #881337;
+    --_color-btn-primary: #9F1239;
+    --_color-btn-primary-hover: #881337;
+    --_family-overview: #FDA4AF;
+  }
+
+  :root:not([data-theme="light"])[data-palette="amber"] {
+    --_color-accent: #FCD34D;
+    --_color-accent-hover: #FDE68A;
+    --_color-accent-secondary: #FBBF24;
+    --_color-accent-light: #451A03;
+    --_color-accent-subtle: #78350F;
+    --_color-btn-primary: #92400E;
+    --_color-btn-primary-hover: #78350F;
+    --_family-overview: #FCD34D;
+  }
+}

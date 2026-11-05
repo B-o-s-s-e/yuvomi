@@ -5876,6 +5876,15 @@ window.yuvomi = {
       // Theme gilt für diese Sitzung, überlebt den Reload aber nicht.
     }
   },
+  applyPalette: (value) => {
+    if (!['violet', 'ocean', 'forest', 'rose', 'amber'].includes(value)) return;
+    if (value === 'violet') {
+      document.documentElement.removeAttribute('data-palette');
+    } else {
+      document.documentElement.setAttribute('data-palette', value);
+    }
+    applyModuleAccentForRoute(currentRoute());
+  },
   restoreThemeColor: () => {
     updateThemeColorForRoute(currentRoute());
   },

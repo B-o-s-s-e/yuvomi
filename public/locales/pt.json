@@ -2021,6 +2021,7 @@
         "themeSystem": "Sistema",
         "themeLight": "Claro",
         "themeDark": "Escuro",
+        "colorPalette": "Paleta de cores",
         "wallModeLabel": "Modo parede",
         "wallModeHint": "Transforma o início neste dispositivo num ecrã tranquilo para um tablet de parede: hora, programa do dia, quem está de serviço hoje e o tempo, num tamanho legível a dois metros e sem nada para operar. Escurece nas horas noturnas. Vale só para este dispositivo, não para os restantes da casa.",
         "wallModeOn": "Modo parede ativo, visível em {{page}}.",

@@ -24198,3 +24198,59 @@ test('R24 G6 P2-1: das Suchfeld hebt sich in beiden Themes von seinem Traeger ab
   }
   assert.deepEqual(offenders, [], `Suchfeld ohne Abstand zum Traeger:\n  ${offenders.join('\n  ')}`);
 });
+
+test('Farbpaletten sind vor dem ersten Bild gespeichert und in den Einstellungen erreichbar', () => {
+  const startup = read('../public/theme-init.js');
+  const settings = read('../public/settings/pages/personal-appearance.js');
+  const router = read('../public/router.js');
+
+  assert.match(startup, /localStorage\.getItem\('yuvomi-palette'\)/);
+  assert.match(startup, /setAttribute\('data-palette', palette\)/);
+  assert.match(settings, /id="palette-toggle" role="radiogroup"/);
+  assert.match(settings, /safeStorageSet\('yuvomi-palette', value\)/);
+  assert.match(router, /applyPalette: \(value\) =>/);
+  for (const palette of ['violet', 'ocean', 'forest', 'rose', 'amber']) {
+    assert.ok(settings.includes(`value: '${palette}'`), `Einstellungen fehlen für ${palette}`);
+  }
+});
+
+test('jede Locale beschriftet die Farbpalette', () => {
+  const localeDirectory = new URL('../public/locales/', import.meta.url);
+  const localeFiles = readdirSync(localeDirectory).filter((file) => file.endsWith('.json'));
+  for (const file of localeFiles) {
+    const locale = JSON.parse(readFileSync(new URL(file, localeDirectory), 'utf8'));
+    assert.ok(locale.settings.colorPalette, `${file} fehlt settings.colorPalette`);
+  }
+});
+
+test('helle und dunkle Farbpaletten halten WCAG-AA-Kontrast', () => {
+  const css = read('../public/styles/tokens.css');
+  const contrast = (hexA, hexB) => {
+    const luminance = (hex) => {
+      const channels = hex.slice(1).match(/../g).map((channel) => parseInt(channel, 16) / 255);
+      const linear = channels.map((channel) => (
+        channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4
+      ));
+      return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
+    };
+    const [lighter, darker] = [luminance(hexA), luminance(hexB)].sort((a, b) => b - a);
+    return (lighter + 0.05) / (darker + 0.05);
+  };
+  const declarations = (block) => Object.fromEntries(
+    [...block.matchAll(/--([\w-]+):\s*(#[\da-fA-F]{6})/g)]
+      .map(([, name, value]) => [name.replace(/^_/, ''), value]),
+  );
+
+  for (const palette of ['ocean', 'forest', 'rose', 'amber']) {
+    const lightBlock = css.match(new RegExp(`:root\\[data-palette="${palette}"\\]\\s*\\{([^}]+)\\}`))?.[1];
+    const darkBlock = css.match(new RegExp(`:root\\[data-theme="dark"\\]\\[data-palette="${palette}"\\]\\s*\\{([^}]+)\\}`))?.[1];
+    assert.ok(lightBlock, `helle Tokens für ${palette} fehlen`);
+    assert.ok(darkBlock, `explizite dunkle Tokens für ${palette} fehlen`);
+    const light = declarations(lightBlock);
+    const dark = declarations(darkBlock);
+    assert.ok(contrast(light['color-accent'], '#FFFFFF') >= 4.5, `${palette}: heller Akzenttext`);
+    assert.ok(contrast(dark['color-accent'], '#37332E') >= 4.5, `${palette}: dunkler Akzenttext`);
+    assert.ok(contrast(light['color-btn-primary'], '#FFFFFF') >= 4.5, `${palette}: heller Buttontext`);
+    assert.ok(contrast(dark['color-btn-primary'], '#FFFFFF') >= 4.5, `${palette}: dunkler Buttontext`);
+  }
+});

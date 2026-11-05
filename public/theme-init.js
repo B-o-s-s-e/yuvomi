@@ -68,6 +68,17 @@
   } catch (e) { /* ohne Metas bleibt es beim Systemverhalten */ }
 })();
 
+(function() {
+  try {
+    var palette = localStorage.getItem('yuvomi-palette');
+    if (['ocean', 'forest', 'rose', 'amber'].indexOf(palette) !== -1) {
+      document.documentElement.setAttribute('data-palette', palette);
+    } else {
+      document.documentElement.removeAttribute('data-palette');
+    }
+  } catch (e) { /* Storage nicht verfuegbar → Standardpalette */ }
+})();
+
 // DER WAND-MODUS GEHOERT ZUM ERSTZUSTAND, ALSO HIERHER.
 //
 // Er blendet Sidebar und Tab-Leiste aus und uebernimmt die ganze Flaeche. Ohne

@@ -2021,6 +2021,7 @@
         "themeSystem": "Système",
         "themeLight": "Clair",
         "themeDark": "Sombre",
+        "colorPalette": "Palette de couleurs",
         "wallModeLabel": "Mode mural",
         "wallModeHint": "Transforme l'accueil sur cet appareil en un affichage calme pour une tablette murale : heure, programme du jour, qui s'y colle et la météo - assez grand pour être lu à deux mètres, sans rien à manipuler. Il s'assombrit pendant les heures de nuit. Ne vaut que pour cet appareil, pas pour le reste du foyer.",
         "wallModeOn": "Mode mural activé - visible dans {{page}}.",
