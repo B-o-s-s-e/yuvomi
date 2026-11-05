@@ -24340,6 +24340,18 @@ test('--radius-scale und --space-scale lassen die Buttonkapsel und Touch-Ziele u
   assert.match(css, /:root\[data-density="spacious"\]\s*\{\s*--space-scale:/);
 });
 
+test('der Eckenstil erreicht auch das Glas-Chrome (Seitenleiste, Blaetter, Menues)', () => {
+  const css = read('../public/styles/tokens.css');
+  // --radius-glass-card/-inner trugen bis zur Behebung ein Literal und blieben
+  // deshalb vom Eckenstil unberuehrt - die schwebende Seitenleiste war das
+  // sichtbarste Beispiel. Beide muessen seither wie --radius-xl & Co. skalieren.
+  for (const token of ['--radius-glass-card', '--radius-glass-inner']) {
+    const m = css.match(new RegExp(`${token}:\\s*([^;]+);`));
+    assert.ok(m, `${token} fehlt`);
+    assert.match(m[1], /calc\(\s*\d+px\s*\*\s*var\(--radius-scale\)\s*\)/, `${token} muss mit --radius-scale skalieren, nicht als Literal stehen`);
+  }
+});
+
 test('helle und dunkle Farbpaletten halten WCAG-AA-Kontrast', () => {
   const css = read('../public/styles/tokens.css');
   const contrast = (hexA, hexB) => {

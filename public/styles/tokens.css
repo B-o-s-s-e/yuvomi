@@ -2162,9 +2162,13 @@
                            0 0 0 0.5px rgba(0, 0, 0, 0.06);
   --glass-shadow-capsule:  var(--_glass-shadow-capsule);
 
-  /* f) Glass-Radien — iOS-26-Kurvatur */
-  --radius-glass-card:   26px;
-  --radius-glass-inner:  18px;
+  /* f) Glass-Radien — iOS-26-Kurvatur
+   * Wie jede Stufe ausser --radius-full (s.o.) skaliert auch das Glas-Chrome
+   * mit --radius-scale - sonst bliebe die schwebende Seitenleiste und jedes
+   * Blatt/Dialog/Popover-Menue vom Eckenstil unberuehrt, waehrend Karten und
+   * Buttons ringsum reagieren. */
+  --radius-glass-card:   calc(26px * var(--radius-scale));
+  --radius-glass-inner:  calc(18px * var(--radius-scale));
   --radius-glass-chip:   var(--radius-full);
   /* --radius-glass-button ist mit Runde 3 entfallen: die Kapsel ist jetzt die
    * Form JEDES Buttons und steht als --radius-full in der .btn-Basisregel
