@@ -12363,7 +12363,7 @@ p.field-hint--warn svg {
 .seal-pair:has(> .module-seal--sm) .seal-pair__who {
   width: var(--space-4);
   height: var(--space-4);
-  margin-inline-start: calc(-1 * var(--space-1) - 2px);
+  margin-inline-start: calc(-1 * var(--space-1) - var(--space-0h));
 }
 
 /* ================================================================

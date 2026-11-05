@@ -1730,7 +1730,7 @@
   font-size: var(--text-xs);
   color: var(--color-text-secondary);
   background-color: var(--color-surface);
-  padding: 2px var(--space-2);
+  padding: var(--space-0h) var(--space-2);
   border-radius: var(--radius-full);
 }
 

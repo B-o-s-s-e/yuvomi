@@ -4708,7 +4708,7 @@ button.today-cockpit__more--link {
      padding-top reservierte genau 42px und wurde überlappt, sobald die Leiste auf
      schmalen Kacheln in eine zweite Zeile umbrach (#569). Jetzt schiebt die Leiste
      den Inhalt exakt um ihre echte Höhe nach unten. */
-  padding: 6px;
+  padding: var(--space-1h);
   gap: var(--space-2);
 }
 

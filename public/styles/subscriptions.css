@@ -483,7 +483,7 @@
 .subscription-status {
   flex: 0 0 auto;
   align-self: center;
-  padding: 2px var(--space-2);
+  padding: var(--space-0h) var(--space-2);
   border-radius: var(--radius-full);
   background: var(--color-surface-3);
   color: var(--color-text-secondary);

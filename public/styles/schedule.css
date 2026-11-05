@@ -144,7 +144,7 @@
 }
 
 .schedule-create-mode {
-  margin-top: 4px;
+  margin-top: var(--space-1);
 }
 
 @media screen and (prefers-color-scheme: dark) {

@@ -2903,7 +2903,7 @@ button.health-med-card:hover {
 .cycle-preg__badge {
   font-size: var(--text-xs);
   font-weight: 600;
-  padding: 2px var(--space-2);
+  padding: var(--space-0h) var(--space-2);
   border-radius: var(--radius-full);
   color: var(--color-text-secondary);
   background: var(--color-fill-well);
@@ -3602,7 +3602,7 @@ button.cycle-cal__day:not(:disabled):hover { background: var(--color-surface-2);
 .cycle-symptom-row__head strong { font-variant-numeric: tabular-nums; }
 .cycle-symptom-row__track {
   display: flex;
-  gap: 2px;
+  gap: var(--space-0h);
   height: var(--space-2);
   background-color: var(--color-fill-well);
   border-radius: var(--radius-full);
@@ -3677,7 +3677,7 @@ button.cycle-cal__day:not(:disabled):hover { background: var(--color-surface-2);
 .cycle-pain-tile__stat {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--space-0h);
 }
 .cycle-pain-tile__value {
   font-size: var(--text-xl);

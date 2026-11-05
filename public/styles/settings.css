@@ -2437,7 +2437,7 @@
   flex-shrink: 0;
   width: 18px;
   height: 18px;
-  margin-top: 2px;
+  margin-top: var(--space-0h);
   accent-color: var(--color-accent);
   cursor: pointer;
 }
@@ -2995,7 +2995,7 @@
 
 .caldav-calendar-item .cardav-addressbook-checkbox,
 .caldav-calendar-item .caldav-calendar-checkbox {
-  margin-top: 2px;
+  margin-top: var(--space-0h);
 }
 
 /* Sammelschalter über der Adressbuchliste: rechtsbündig und leichter als die
@@ -3723,7 +3723,7 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
-  padding: 2px var(--space-2);
+  padding: var(--space-0h) var(--space-2);
   border: var(--space-px) solid var(--color-border);
   border-radius: var(--radius-full);
   background: var(--color-surface-work);
