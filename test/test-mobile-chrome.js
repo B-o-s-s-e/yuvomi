@@ -684,7 +684,13 @@ test('#1917: der Fuss der Wand hat eine Scroll-Kante - kein Tipp, und sein Endab
     'nur am Telefon, an derselben Grenze wie Zeilentitel und Zeitspanne - dort scrollt die Flaeche ohnehin');
   assert.match(decl(raised[0].body, HEIGHT), /^var\(--space-\d+\)$/, 'die Hoehe am Telefon ist ein Abstands-Token');
   const token = decl(raised[0].body, HEIGHT).match(/--space-\d+/)[0];
-  const px = (name) => parseFloat(read('../public/styles/tokens.css').match(new RegExp(`${name}:\\s*(\\d+)px`))?.[1] ?? 'NaN');
+  const px = (name) => {
+    const m = read('../public/styles/tokens.css').match(new RegExp(`${name}:\\s*([^;]+);`));
+    const v = m?.[1].trim() ?? '';
+    // --space-* traegt seit dem Dichte-Regler `calc(Npx * M)` statt eines
+    // Literals - siehe gleiches Muster in test-frontend-audit.js (SHELL).
+    return parseFloat(v.match(/^calc\(([\d.]+)px/)?.[1] ?? v.match(/^(\d+)px$/)?.[1] ?? 'NaN');
+  };
   assert.ok(px(token) >= px('--space-12'),
     `am Telefon traegt die Kante erst ab der Hoehe eines Gesichts (48px), ${token} sind ${px(token)}px`);
   for (const r of all.filter((x) => x.selector === '.wall__foot' && x.at.length > 0)) {

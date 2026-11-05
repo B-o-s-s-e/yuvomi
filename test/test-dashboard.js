@@ -3700,7 +3700,8 @@ test('U1 b: contentSpanRows - Zeilen aus den Daten, die Groesse ist die Obergren
 test('U1 b: TILE_GEOMETRY sind die Masse aus dashboard.css und tokens.css', () => {
   const css = readFileSync(new URL('../public/styles/dashboard.css', import.meta.url), 'utf8');
   const tokens = readFileSync(new URL('../public/styles/tokens.css', import.meta.url), 'utf8');
-  const tok = (name) => Number(new RegExp(`--${name}:\\s*([\\d.]+)px`).exec(tokens)?.[1]);
+  const tok = (name) => Number(new RegExp(`--${name}:\\s*([\\d.]+)px`).exec(tokens)?.[1]
+    ?? new RegExp(`--${name}:\\s*calc\\(([\\d.]+)px`).exec(tokens)?.[1]);
   const rules = [...eachRule(css)];
   const g = widgets.TILE_GEOMETRY;
   const grid = rules.find((r) => r.selector.trim() === '.dashboard__grid' && /--dashboard-row-unit/.test(r.body));

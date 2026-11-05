@@ -1993,11 +1993,19 @@ function siteTokenBlocks(css) {
   return blocks;
 }
 
-/** Werte der App: `--_family-*` hell (erster Treffer) und dunkel (alle weiteren, muessen gleich sein). */
+/** Werte der App: `--_family-*` hell (erster Treffer) und dunkel (alle weiteren, muessen gleich sein).
+ *  Die Palettenregler (Einstellungen > Darstellung > Farbpalette) tragen eigene
+ *  `--_family-overview`-Werte in `[data-palette="..."]`-Bloecken - diese sind
+ *  eine Nutzerwahl im Haushalt, keine Drift gegen die oeffentliche Marketing-
+ *  Seite (site.css spiegelt immer die Werkseinstellung Violett). Der Guard
+ *  liest deshalb nur Bloecke ohne `data-palette` im Selektor. */
 function appFamilies(tokens) {
   const fam = {};
-  for (const m of tokens.matchAll(/--_family-([a-z]+):\s*(#[0-9A-Fa-f]{6})\b/g)) {
-    (fam[m[1]] ||= []).push(m[2].toUpperCase());
+  for (const rule of eachRule(tokens)) {
+    if (/data-palette/.test(rule.selector)) continue;
+    for (const m of rule.body.matchAll(/--_family-([a-z]+):\s*(#[0-9A-Fa-f]{6})\b/g)) {
+      (fam[m[1]] ||= []).push(m[2].toUpperCase());
+    }
   }
   const out = {};
   for (const [name, values] of Object.entries(fam)) {

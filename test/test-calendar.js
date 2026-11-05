@@ -2197,7 +2197,8 @@ test('Pfeilnamen folgen der Schrittweite, die Agenda nennt ihre Spanne', () => {
 // Wochen-Monat nichts. Die Wochen teilen sich jetzt ein festes Budget.
 test('Titelfassung am Telefon: die Wochen teilen sich 320px, keine Zeile unter 48px', () => {
   const tokens = readFileSync(new URL('../public/styles/tokens.css', import.meta.url), 'utf8');
-  const px = (name) => Number(new RegExp(`--${name}:\\s*(\\d+)px`).exec(tokens)?.[1]);
+  const px = (name) => Number(new RegExp(`--${name}:\\s*(\\d+)px`).exec(tokens)?.[1]
+    ?? new RegExp(`--${name}:\\s*calc\\((\\d+)px`).exec(tokens)?.[1]);
   const rule = [...eachRule(calendarCss)].find((r) => r.at.some((a) => /max-width:\s*639px/.test(a))
     && r.selector.trim() === '.month-view--split.month-view--titles .month-day');
   assert(rule, 'Zeilenregel der Titelfassung im geteilten Monat nicht gefunden');

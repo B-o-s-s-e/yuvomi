@@ -5885,6 +5885,18 @@ window.yuvomi = {
     }
     applyModuleAccentForRoute(currentRoute());
   },
+  // Eckenstil (Radius-Skala) und Abstand (Space-Skala) - dasselbe Attribut-
+  // Muster wie applyPalette, aber ohne Modul-Akzent: beide Regler wirken
+  // nur ueber --radius-scale/--space-scale in tokens.css, nichts davon liegt
+  // als aufgeloester Wert im Inline-Style von <html>.
+  applyShape: (value) => {
+    if (!['sharp', 'rounded', 'soft'].includes(value)) return;
+    document.documentElement.setAttribute('data-shape', value);
+  },
+  applyDensity: (value) => {
+    if (!['compact', 'comfortable', 'spacious'].includes(value)) return;
+    document.documentElement.setAttribute('data-density', value);
+  },
   restoreThemeColor: () => {
     updateThemeColorForRoute(currentRoute());
   },

@@ -120,6 +120,12 @@ function resolve(name, theme) {
       return next;
     });
   }
+  // --radius-* und --space-* tragen seit dem Eckenstil-/Dichte-Regler
+  // `calc(Npx * M)` statt eines Literals, sobald M (--radius-scale/
+  // --space-scale) oben zu einer reinen Zahl aufgeloest ist. Fuer die
+  // restliche Pruefung zaehlt der errechnete Px-Wert, nicht der Ausdruck.
+  const scaled = value.match(/^calc\(\s*([\d.]+)px\s*\*\s*([\d.]+)\s*\)$/);
+  if (scaled) value = `${Number(scaled[1]) * Number(scaled[2])}px`;
   return value;
 }
 

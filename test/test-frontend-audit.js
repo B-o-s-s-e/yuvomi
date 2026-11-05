@@ -19095,7 +19095,7 @@ test('PAGE-019: der Liste-+-Detail-Baustein misst die Modulflaeche an der Schwel
   // Deckel steht (Content-Spalte + 2 Desktop-Gutter), nimmt die Liste
   // --layout-list-wide. Die Zahl der Abfrage ist genau dieser Deckel.
   const capPx = Number(tokens.match(/--content-max-width:\s*([0-9]+)px/)[1])
-    + 2 * Number(tokens.match(/--space-8:\s*([0-9]+)px/)[1]);
+    + 2 * Number(tokens.match(/--space-8:\s*calc\(([0-9]+)px/)[1]);
   assert.match(tokens, /:root[\s\S]*@media[^{]*\{[^}]*--page-gutter:\s*var\(--space-8\)/, 'der Desktop-Gutter ist --space-8');
   const capRem = capPx / 16;
   const listWide = rem('--layout-list-wide') * 16;
@@ -19490,6 +19490,12 @@ test('SHELL: die Seitenleiste fasst 15 Module ohne Scrollen auf 800px Fensterhoe
     assert.ok(m, `tokens.css: ${name} fehlt`);
     const v = m[1].trim();
     if (/^var\(/.test(v)) return tok(v.match(/var\((--[\w-]+)\)/)[1]);
+    // --space-* und --radius-* tragen seit dem Dichte-/Eckenstil-Regler
+    // (Einstellungen > Darstellung) `calc(Npx * var(--*-scale))` statt eines
+    // Literals. Die Rechnung hier gilt fuer den Werkszustand (Skala 1), also
+    // zaehlt allein das Npx vor dem Stern.
+    const scaled = v.match(/^calc\(([0-9.]+)px\s*\*\s*var\(--[\w-]+\)\)$/);
+    if (scaled) return parseFloat(scaled[1]);
     if (/rem$/.test(v)) return parseFloat(v) * 16;
     if (/px$/.test(v)) return parseFloat(v);
     return parseFloat(v);
@@ -24221,6 +24227,72 @@ test('jede Locale beschriftet die Farbpalette', () => {
     const locale = JSON.parse(readFileSync(new URL(file, localeDirectory), 'utf8'));
     assert.ok(locale.settings.colorPalette, `${file} fehlt settings.colorPalette`);
   }
+});
+
+test('Eckenstil und Abstand sind vor dem ersten Bild gespeichert und in den Einstellungen erreichbar', () => {
+  const startup = read('../public/theme-init.js');
+  const settings = read('../public/settings/pages/personal-appearance.js');
+  const router = read('../public/router.js');
+
+  assert.match(startup, /localStorage\.getItem\('yuvomi-shape'\)/);
+  assert.match(startup, /setAttribute\('data-shape',/);
+  assert.match(startup, /localStorage\.getItem\('yuvomi-density'\)/);
+  assert.match(startup, /setAttribute\('data-density',/);
+  assert.match(settings, /id="shape-toggle" role="radiogroup"/);
+  assert.match(settings, /id="density-toggle" role="radiogroup"/);
+  assert.match(settings, /safeStorageSet\('yuvomi-shape', value\)/);
+  assert.match(settings, /safeStorageSet\('yuvomi-density', value\)/);
+  assert.match(router, /applyShape: \(value\) =>/);
+  assert.match(router, /applyDensity: \(value\) =>/);
+  for (const shape of ['sharp', 'rounded', 'soft']) {
+    assert.ok(settings.includes(`value: '${shape}'`), `Einstellungen fehlen für Eckenstil ${shape}`);
+  }
+  for (const density of ['compact', 'comfortable', 'spacious']) {
+    assert.ok(settings.includes(`value: '${density}'`), `Einstellungen fehlen für Abstand ${density}`);
+  }
+});
+
+test('die Theme-Voreinstellungen buendeln Palette, Eckenstil und Abstand aus gueltigen Werten', () => {
+  const settings = read('../public/settings/pages/personal-appearance.js');
+  assert.match(settings, /id="preset-row"/);
+  const presetBlock = settings.match(/const THEME_PRESETS = \[([\s\S]*?)\n\];/)?.[1];
+  assert.ok(presetBlock, 'THEME_PRESETS fehlt');
+  const entries = [...presetBlock.matchAll(/palette: '(\w+)', shape: '(\w+)', density: '(\w+)'/g)];
+  assert.ok(entries.length >= 1, 'keine Voreinstellungen gefunden');
+  const palettes = ['violet', 'ocean', 'forest', 'rose', 'amber'];
+  const shapes = ['sharp', 'rounded', 'soft'];
+  const densities = ['compact', 'comfortable', 'spacious'];
+  for (const [, palette, shape, density] of entries) {
+    assert.ok(palettes.includes(palette), `Voreinstellung nennt unbekannte Palette ${palette}`);
+    assert.ok(shapes.includes(shape), `Voreinstellung nennt unbekannten Eckenstil ${shape}`);
+    assert.ok(densities.includes(density), `Voreinstellung nennt unbekannten Abstand ${density}`);
+  }
+});
+
+test('jede Locale beschriftet Voreinstellungen, Eckenstil und Abstand', () => {
+  const localeDirectory = new URL('../public/locales/', import.meta.url);
+  const localeFiles = readdirSync(localeDirectory).filter((file) => file.endsWith('.json'));
+  const keys = ['themePresets', 'cornerStyle', 'shapeSharp', 'shapeRounded', 'shapeSoft', 'density', 'densityCompact', 'densityComfortable', 'densitySpacious'];
+  for (const file of localeFiles) {
+    const locale = JSON.parse(readFileSync(new URL(file, localeDirectory), 'utf8'));
+    for (const key of keys) {
+      assert.ok(locale.settings[key], `${file} fehlt settings.${key}`);
+    }
+  }
+});
+
+test('--radius-scale und --space-scale lassen die Buttonkapsel und Touch-Ziele unberuehrt', () => {
+  const css = read('../public/styles/tokens.css');
+  assert.match(css, /--radius-full:\s*9999px;/, '--radius-full bleibt ein Literal, keine Skala');
+  for (const target of ['--target-sm', '--target-md', '--target-lg', '--target-base']) {
+    const m = css.match(new RegExp(`${target}:\\s*([^;]+);`));
+    assert.ok(m, `${target} fehlt`);
+    assert.doesNotMatch(m[1], /--radius-scale|--space-scale/, `${target} darf nicht von einer Darstellungs-Skala abhaengen`);
+  }
+  assert.match(css, /:root\[data-shape="sharp"\]\s*\{\s*--radius-scale:/);
+  assert.match(css, /:root\[data-shape="soft"\]\s*\{\s*--radius-scale:/);
+  assert.match(css, /:root\[data-density="compact"\]\s*\{\s*--space-scale:/);
+  assert.match(css, /:root\[data-density="spacious"\]\s*\{\s*--space-scale:/);
 });
 
 test('helle und dunkle Farbpaletten halten WCAG-AA-Kontrast', () => {

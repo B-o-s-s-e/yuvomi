@@ -79,6 +79,24 @@
   } catch (e) { /* Storage nicht verfuegbar → Standardpalette */ }
 })();
 
+// ECKENSTIL UND ABSTAND FOLGEN DEMSELBEN MUSTER WIE DIE PALETTE: VOR DEM
+// ERSTEN BILD GESETZT, SONST FLACKERT DIE KANTE/DER ABSTAND BEIM NACHLADEN.
+(function() {
+  try {
+    var shape = localStorage.getItem('yuvomi-shape');
+    document.documentElement.setAttribute('data-shape',
+      ['sharp', 'soft'].indexOf(shape) !== -1 ? shape : 'rounded');
+  } catch (e) { /* Storage nicht verfuegbar → Standard-Eckenstil */ }
+})();
+
+(function() {
+  try {
+    var density = localStorage.getItem('yuvomi-density');
+    document.documentElement.setAttribute('data-density',
+      ['compact', 'spacious'].indexOf(density) !== -1 ? density : 'comfortable');
+  } catch (e) { /* Storage nicht verfuegbar → Standardabstand */ }
+})();
+
 // DER WAND-MODUS GEHOERT ZUM ERSTZUSTAND, ALSO HIERHER.
 //
 // Er blendet Sidebar und Tab-Leiste aus und uebernimmt die ganze Flaeche. Ohne

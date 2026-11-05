@@ -1890,7 +1890,8 @@ test('eine leere Suche bietet die andere Ansicht an - aber nur, wenn sie dort et
 test('der Ordnername bekommt im Rail genug Breite fuer eine Zeile (R11 H4)', () => {
   const tokens = read('../public/styles/tokens.css');
   const tok = (name) => {
-    const m = tokens.match(new RegExp(`--${name}:\\s*([\\d.]+)px`));
+    const m = tokens.match(new RegExp(`--${name}:\\s*([\\d.]+)px`))
+      ?? tokens.match(new RegExp(`--${name}:\\s*calc\\(([\\d.]+)px`));
     assert.ok(m, `Token --${name} nicht gefunden`);
     return Number(m[1]);
   };

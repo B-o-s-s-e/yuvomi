@@ -62,6 +62,36 @@ const PALETTE_OPTIONS = [
   { value: 'amber', label: 'Amber' },
 ];
 
+// Eckenstil: skaliert --radius-scale (tokens.css). Die Buttonkapsel
+// (--radius-full) bleibt davon unberührt - siehe DESIGN.md "Buttonform".
+const SHAPE_OPTIONS = [
+  { value: 'sharp', icon: 'square', labelKey: 'settings.shapeSharp' },
+  { value: 'rounded', icon: 'squircle', labelKey: 'settings.shapeRounded' },
+  { value: 'soft', icon: 'circle', labelKey: 'settings.shapeSoft' },
+];
+
+// Abstand: skaliert --space-scale (tokens.css). Touch-Ziele (--target-*)
+// bleiben davon unberührt - WCAG 2.5.8 gilt unabhängig vom Abstand.
+const DENSITY_OPTIONS = [
+  { value: 'compact', labelKey: 'settings.densityCompact' },
+  { value: 'comfortable', labelKey: 'settings.densityComfortable' },
+  { value: 'spacious', labelKey: 'settings.densitySpacious' },
+];
+
+// Schnellauswahl: bündelt Palette + Eckenstil + Abstand in einem Klick, wie
+// die vorgefertigten Themes anderer Design-Systeme (z.B. PrimeNG). Jeder
+// Regler darunter bleibt trotzdem einzeln verstellbar - eine Voreinstellung
+// ist ein Startpunkt, kein Käfig. "Aktiv" markiert die Voreinstellung, deren
+// drei Werte exakt dem aktuellen Zustand entsprechen; weicht auch nur einer
+// ab, gilt keine davon als aktiv (eigene, "benutzerdefinierte" Kombination).
+const THEME_PRESETS = [
+  { value: 'classic', label: 'Classic', palette: 'violet', shape: 'rounded', density: 'comfortable' },
+  { value: 'compact', label: 'Compact', palette: 'ocean', shape: 'sharp', density: 'compact' },
+  { value: 'soft', label: 'Soft', palette: 'rose', shape: 'soft', density: 'spacious' },
+  { value: 'sharp', label: 'Sharp', palette: 'forest', shape: 'sharp', density: 'comfortable' },
+  { value: 'bold', label: 'Bold', palette: 'amber', shape: 'rounded', density: 'spacious' },
+];
+
 const DATE_FORMATS = [
   ['mdy', 'MM/DD/YYYY'],
   ['dmy', 'DD.MM.YYYY'],
@@ -104,6 +134,26 @@ function currentTheme() {
 function currentPalette() {
   const stored = safeStorageGet('yuvomi-palette', 'violet');
   return PALETTE_OPTIONS.some(({ value }) => value === stored) ? stored : 'violet';
+}
+
+function currentShape() {
+  const stored = safeStorageGet('yuvomi-shape', 'rounded');
+  return SHAPE_OPTIONS.some(({ value }) => value === stored) ? stored : 'rounded';
+}
+
+function currentDensity() {
+  const stored = safeStorageGet('yuvomi-density', 'comfortable');
+  return DENSITY_OPTIONS.some(({ value }) => value === stored) ? stored : 'comfortable';
+}
+
+function currentPreset() {
+  const palette = currentPalette();
+  const shape = currentShape();
+  const density = currentDensity();
+  const match = THEME_PRESETS.find((preset) => (
+    preset.palette === palette && preset.shape === shape && preset.density === density
+  ));
+  return match ? match.value : null;
 }
 
 function formatOptions(selected) {
@@ -477,6 +527,9 @@ function renderLoadError(container) {
 function renderPage(container, preferences, isAdmin) {
   const theme = currentTheme();
   const palette = currentPalette();
+  const shape = currentShape();
+  const density = currentDensity();
+  const preset = currentPreset();
   const activeRegion = resolveRegion(preferences);
   const customHidden = isAdmin && activeRegion !== CUSTOM_REGION;
   container.replaceChildren();
@@ -487,6 +540,27 @@ function renderPage(container, preferences, isAdmin) {
            Einstellungen in ihrer eigenen Karte - zehn Einstellungen in acht
            Karten, drei davon im ersten Bild. -->
       <div class="row-carrier settings-group">
+        <!-- Schnellauswahl (Critique: "wie PrimeNG") - keine radiogroup, denn
+             der Zustand ist nicht auf diese fuenf Werte beschraenkt: jeder
+             Regler darunter bleibt einzeln verstellbar, und "keine davon
+             aktiv" ist ein gueltiger (benutzerdefinierter) Zustand. Deshalb
+             aria-pressed statt role="radio"/aria-checked. -->
+        <div class="settings-setting-row settings-setting-row--stacked">
+          <div class="settings-setting-row__copy">
+            <div class="settings-setting-row__label">${esc(t('settings.themePresets'))}</div>
+          </div>
+          <div class="settings-setting-row__control">
+            <div class="theme-preset-row" id="preset-row">
+              ${THEME_PRESETS.map(({ value, label, palette: presetPalette }) => {
+                const on = preset === value;
+                return `<button type="button" class="theme-preset palette-choice--${presetPalette}${on ? ' is-active' : ''}"
+                  data-preset="${value}" aria-pressed="${on}">
+                  <span class="palette-swatch" aria-hidden="true"></span>${label}
+                </button>`;
+              }).join('')}
+            </div>
+          </div>
+        </div>
         <!-- Hell / Dunkel / System ist EIN Wert aus drei - das Segment der
              Shell im Well (.segmented, panel.css; DESIGN.md "Segmented
              Controls"). Bis 2026-09-26 standen hier drei getrennte
@@ -518,6 +592,38 @@ function renderPage(container, preferences, isAdmin) {
                 return `<button type="button" class="segmented__item palette-choice palette-choice--${value}${on ? ' is-active' : ''}" role="radio"
                   data-tab-id="${value}" aria-checked="${on}" tabindex="${on ? '0' : '-1'}">
                   <span class="palette-swatch" aria-hidden="true"></span>${label}
+                </button>`;
+              }).join('')}
+            </div>
+          </div>
+        </div>
+        <div class="settings-setting-row settings-setting-row--stacked">
+          <div class="settings-setting-row__copy">
+            <div class="settings-setting-row__label">${esc(t('settings.cornerStyle'))}</div>
+          </div>
+          <div class="settings-setting-row__control">
+            <div class="segmented settings-segmented" id="shape-toggle" role="radiogroup" aria-label="${esc(t('settings.cornerStyle'))}">
+              ${SHAPE_OPTIONS.map(({ value, icon, labelKey }) => {
+                const on = shape === value;
+                return `<button type="button" class="segmented__item${on ? ' is-active' : ''}" role="radio"
+                  data-tab-id="${value}" aria-checked="${on}" tabindex="${on ? '0' : '-1'}">
+                  <i data-lucide="${icon}" class="icon-md" aria-hidden="true"></i>${esc(t(labelKey))}
+                </button>`;
+              }).join('')}
+            </div>
+          </div>
+        </div>
+        <div class="settings-setting-row settings-setting-row--stacked">
+          <div class="settings-setting-row__copy">
+            <div class="settings-setting-row__label">${esc(t('settings.density'))}</div>
+          </div>
+          <div class="settings-setting-row__control">
+            <div class="segmented settings-segmented" id="density-toggle" role="radiogroup" aria-label="${esc(t('settings.density'))}">
+              ${DENSITY_OPTIONS.map(({ value, labelKey }) => {
+                const on = density === value;
+                return `<button type="button" class="segmented__item${on ? ' is-active' : ''}" role="radio"
+                  data-tab-id="${value}" aria-checked="${on}" tabindex="${on ? '0' : '-1'}">
+                  ${esc(t(labelKey))}
                 </button>`;
               }).join('')}
             </div>
@@ -686,6 +792,46 @@ function applyPalette(value) {
   } else {
     document.documentElement.setAttribute('data-palette', value);
   }
+}
+
+function applyShape(value) {
+  if (!SHAPE_OPTIONS.some(({ value: option }) => option === value)) return;
+  safeStorageSet('yuvomi-shape', value);
+  if (window.yuvomi?.applyShape) {
+    try {
+      window.yuvomi.applyShape(value);
+      return;
+    } catch {
+      // Fall back to applying the attribute directly when the router is unavailable.
+    }
+  }
+  document.documentElement.setAttribute('data-shape', value);
+}
+
+function applyDensity(value) {
+  if (!DENSITY_OPTIONS.some(({ value: option }) => option === value)) return;
+  safeStorageSet('yuvomi-density', value);
+  if (window.yuvomi?.applyDensity) {
+    try {
+      window.yuvomi.applyDensity(value);
+      return;
+    } catch {
+      // Fall back to applying the attribute directly when the router is unavailable.
+    }
+  }
+  document.documentElement.setAttribute('data-density', value);
+}
+
+// Wendet die drei Werte einer Voreinstellung in einem Zug an und zeichnet die
+// Seite danach neu, damit alle drei Regler (Palette, Eckenstil, Abstand) und
+// die Voreinstellungs-Reihe selbst denselben, konsistenten Zustand zeigen.
+function applyPreset(value, container, user) {
+  const preset = THEME_PRESETS.find((item) => item.value === value);
+  if (!preset) return;
+  applyPalette(preset.palette);
+  applyShape(preset.shape);
+  applyDensity(preset.density);
+  render(container, { user });
 }
 
 // Spiegelt die aktive Region als Formatier-Locale für Zahlen/Währung in den
@@ -974,6 +1120,11 @@ function bindDeviceDisplay(container) {
 }
 
 function bindEvents(container, user) {
+  const presetRow = container.querySelector('#preset-row');
+  presetRow?.querySelectorAll('.theme-preset').forEach((btn) => {
+    btn.addEventListener('click', () => applyPreset(btn.dataset.preset, container, user));
+  });
+
   // Geteilte gleitende Kapsel (Re-Critique 2026-09-27, D8).
   const themeToggle = container.querySelector('#theme-toggle');
   if (themeToggle) attachSegmentIndicator(themeToggle);
@@ -991,6 +1142,24 @@ function bindEvents(container, user) {
     activeClass: 'is-active',
     mode: 'select',
     onChange: (value) => applyPalette(value),
+  });
+
+  const shapeToggle = container.querySelector('#shape-toggle');
+  if (shapeToggle) attachSegmentIndicator(shapeToggle);
+  wireTablist(shapeToggle, {
+    activeId: currentShape(),
+    activeClass: 'is-active',
+    mode: 'select',
+    onChange: (value) => applyShape(value),
+  });
+
+  const densityToggle = container.querySelector('#density-toggle');
+  if (densityToggle) attachSegmentIndicator(densityToggle);
+  wireTablist(densityToggle, {
+    activeId: currentDensity(),
+    activeClass: 'is-active',
+    mode: 'select',
+    onChange: (value) => applyDensity(value),
   });
 
   bindDeviceDisplay(container);

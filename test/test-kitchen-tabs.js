@@ -189,7 +189,8 @@ test('Indikator D11: eine Leiste gibt der Kapsel ihre eigene Form - breiter als 
 test('Kueche mobil D11: Kapsel 36-40px hoch, 12px Luft ums Wort, der Zaehler mit Abstand (Critique R21)', async () => {
   const { eachRule } = await import('./css-rules.js');
   const tokens = readSrc('../public/styles/tokens.css');
-  const tok = (name) => Number(tokens.match(new RegExp(`--${name}:\\s*([\\d.]+)px`))?.[1]);
+  const tok = (name) => Number(tokens.match(new RegExp(`--${name}:\\s*([\\d.]+)px`))?.[1]
+    ?? tokens.match(new RegExp(`--${name}:\\s*calc\\(([\\d.]+)px`))?.[1]);
   const px = (value) => tok(String(value ?? '').match(/^var\(--([\w-]+)\)$/)?.[1]);
   const narrow = [...eachRule(readSrc('../public/styles/kitchen-tabs.css'))].filter((r) => r.at.some((a) => /\(max-width:\s*639px\)/.test(a)));
   const decl = (sel, prop) => narrow.filter((r) => r.selector.trim() === sel).map((r) => r.body.match(new RegExp(`(?:^|;)\\s*${prop}:\\s*([^;]+)`))?.[1]?.trim()).filter(Boolean).at(-1);
@@ -421,7 +422,10 @@ test('Kueche mobil: die Leiste passt bei 375px in allen vier Tabs ohne Scrollen 
   const { eachRule } = await import('./css-rules.js');
   const tokens = readSrc('../public/styles/tokens.css');
   const tok = (name) => {
-    const m = tokens.match(new RegExp(`--${name}:\\s*([\\d.]+)px`));
+    const m = tokens.match(new RegExp(`--${name}:\\s*([\\d.]+)px`))
+      // --space-*/--radius-* tragen seit dem Dichte-/Eckenstil-Regler
+      // `calc(Npx * M)` statt eines Literals.
+      ?? tokens.match(new RegExp(`--${name}:\\s*calc\\(([\\d.]+)px`));
     assert.ok(m, `Token --${name} nicht gefunden`);
     return Number(m[1]);
   };

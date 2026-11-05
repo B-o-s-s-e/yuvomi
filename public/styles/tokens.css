@@ -1310,13 +1310,18 @@
    *    Geprüft auf Ebene 3 (Signatur, statisch: `one button shape
    *    app-wide` in test-frontend-audit.js) und Ebene 4 (Dokument,
    *    gerendert: Sonde „Buttonform" in test-document-guards.js).
-   * -------------------------------------------------------- */
-  --radius-2xs: 2px;
-  --radius-xs: 4px;
-  --radius-sm: 10px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 26px;
+   *
+   *    --radius-scale (Einstellungen > Darstellung > Eckenstil) skaliert
+   *    JEDE Stufe außer --radius-full: die Kapsel bleibt die Kapsel, ganz
+   *    gleich welchen Eckenstil ein Nutzer wählt - das ist dieselbe
+   *    Buttonform-Regel, nicht ihre Ausnahme. */
+  --radius-scale: 1;
+  --radius-2xs: calc(2px * var(--radius-scale));
+  --radius-xs: calc(4px * var(--radius-scale));
+  --radius-sm: calc(10px * var(--radius-scale));
+  --radius-md: calc(12px * var(--radius-scale));
+  --radius-lg: calc(16px * var(--radius-scale));
+  --radius-xl: calc(26px * var(--radius-scale));
   --radius-full: 9999px;
 
   /* --------------------------------------------------------
@@ -1391,21 +1396,26 @@
    * schrieb sie an sieben Stellen mit einem Fallback hin, der die Rechnung des
    * Namens vorwegnahm (`var(--space-1h, 6px)`), und weil der Fallback griff,
    * fiel nie auf, dass die Stufe nicht existierte (Audit 2026-08-08, P3-3).
+   *
+   * --space-scale (Einstellungen > Darstellung > Abstand) skaliert die
+   * ganze Skala außer dem Haarlinien-Schritt --space-px: eine Linie bleibt
+   * 1px, ganz gleich wie dicht oder luftig ein Nutzer seine Flächen stellt.
    * -------------------------------------------------------- */
+  --space-scale: 1;
   --space-px: 1px;
-  --space-0h: 2px;
-  --space-1:  4px;
-  --space-1h: 6px;
-  --space-2:  8px;
-  --space-2h: 10px;
-  --space-3:  12px;
-  --space-4:  16px;
-  --space-5:  20px;
-  --space-6:  24px;
-  --space-8:  32px;
-  --space-10: 40px;
-  --space-12: 48px;
-  --space-16: 64px;
+  --space-0h: calc(2px * var(--space-scale));
+  --space-1:  calc(4px * var(--space-scale));
+  --space-1h: calc(6px * var(--space-scale));
+  --space-2:  calc(8px * var(--space-scale));
+  --space-2h: calc(10px * var(--space-scale));
+  --space-3:  calc(12px * var(--space-scale));
+  --space-4:  calc(16px * var(--space-scale));
+  --space-5:  calc(20px * var(--space-scale));
+  --space-6:  calc(24px * var(--space-scale));
+  --space-8:  calc(32px * var(--space-scale));
+  --space-10: calc(40px * var(--space-scale));
+  --space-12: calc(48px * var(--space-scale));
+  --space-16: calc(64px * var(--space-scale));
 
   /* --------------------------------------------------------
    * 11b. Touch-Target Sizes
@@ -3191,4 +3201,39 @@
     --_color-btn-primary-hover: #78350F;
     --_family-overview: #FCD34D;
   }
+}
+
+/* --------------------------------------------------------
+ * Eckenstil (Shape) und Abstand (Density)
+ *
+ * Zwei unabhängige Regler unter Einstellungen > Darstellung, jeder für
+ * sich mit jeder Farbpalette kombinierbar. "Sharp" und "Soft" skalieren
+ * --radius-scale, "Compact" und "Spacious" skalieren --space-scale.
+ * "Rounded" und "Comfortable" sind die Werkseinstellung (Skala 1) und
+ * stehen hier nur explizit, damit das data-Attribut immer einen aktiven
+ * Treffer hat. --radius-full (die Buttonkapsel) und --target-* (Touch-
+ * Ziele, WCAG 2.5.8) bleiben von beiden Reglern unberührt.
+ * -------------------------------------------------------- */
+:root[data-shape="sharp"] {
+  --radius-scale: 0.25;
+}
+
+:root[data-shape="rounded"] {
+  --radius-scale: 1;
+}
+
+:root[data-shape="soft"] {
+  --radius-scale: 1.6;
+}
+
+:root[data-density="compact"] {
+  --space-scale: 0.75;
+}
+
+:root[data-density="comfortable"] {
+  --space-scale: 1;
+}
+
+:root[data-density="spacious"] {
+  --space-scale: 1.25;
 }

@@ -40,7 +40,10 @@ function insetDeclaration(selector) {
 }
 
 function tokenPx(name) {
-  const value = tokensCss.match(new RegExp(`${name}:\\s*(\\d+(?:\\.\\d+)?)px`))?.[1];
+  const value = tokensCss.match(new RegExp(`${name}:\\s*(\\d+(?:\\.\\d+)?)px`))?.[1]
+    // --space-* traegt seit dem Dichte-Regler `calc(Npx * M)` statt eines
+    // Literals - derselbe Fallback wie in test-frontend-audit.js (SHELL).
+    ?? tokensCss.match(new RegExp(`${name}:\\s*calc\\((\\d+(?:\\.\\d+)?)px`))?.[1];
   assert.ok(value, `${name} ist in tokens.css kein Pixelwert`);
   return Number(value);
 }
