@@ -1,7 +1,12 @@
 services:
   yuvomi:
-    image: ghcr.io/ulsklyc/yuvomi:latest
-    build: .                          # optional: use --build to build locally instead
+    # Built locally from this checkout (not pulled from ghcr.io/ulsklyc/yuvomi),
+    # so a cached or published upstream image can never shadow your local
+    # changes. pull_policy: build skips any registry lookup entirely - no
+    # network call, and it still works offline.
+    image: yuvomi-local:latest
+    build: .
+    pull_policy: build
     container_name: yuvomi
     restart: unless-stopped
     ports:

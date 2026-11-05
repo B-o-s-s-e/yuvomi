@@ -171,12 +171,12 @@ search for Yuvomi in the catalog and install, no terminal.
 [ulsklyc/yuvomi-home-assistant](https://github.com/ulsklyc/yuvomi-home-assistant) under Settings → Apps
 and install Yuvomi as an app ([steps](https://yuvomi.cloud/install.html#homeassistant)).
 
-**With Docker** on any server. The image `ghcr.io/ulsklyc/yuvomi:latest` is about 500 MB and runs
-on amd64 and arm64 (Raspberry Pi 4/5); Yuvomi needs one port, 3000 by default.
+**With Docker** on any server. This fork builds its own image from source (`docker-compose.yml`
+always runs `docker compose build`, never pulls `ghcr.io/ulsklyc/yuvomi`), so clone the repo first;
+it runs on amd64 and arm64 (Raspberry Pi 4/5) and needs one port, 3000 by default.
 
 ```bash
-curl -O https://raw.githubusercontent.com/B-o-s-s-e/yuvomi/main/docker-compose.yml
-curl -O https://raw.githubusercontent.com/B-o-s-s-e/yuvomi/main/.env.example
+git clone https://github.com/B-o-s-s-e/yuvomi.git && cd yuvomi
 cp .env.example .env
 openssl rand -hex 32   # SESSION_SECRET
 openssl rand -hex 32   # DB_ENCRYPTION_KEY
@@ -192,7 +192,8 @@ openssl rand -hex 32   # DB_ENCRYPTION_KEY
 docker compose up -d
 ```
 
-Open `http://localhost:3000` and create your admin account. Podman, Proxmox, HTTPS, backups and
+The first run builds the image from source, so it takes a few minutes; later runs only rebuild
+when source files change. Open `http://localhost:3000` and create your admin account. Podman, Proxmox, HTTPS, backups and
 troubleshooting, step by step: the [install guide on yuvomi.cloud](https://yuvomi.cloud/install.html)
 and the [installation guide](docs/installation.md).
 

@@ -703,7 +703,10 @@ test('der Inline-Fallback stimmt Wert fuer Wert mit tokens.css ueberein', () => 
     const out = value.replace(/var\(\s*(--[\w-]+)\s*(?:,\s*([^()]*))?\)/g,
       (_, name, fb) => env[name] !== undefined ? resolve(env[name], env, depth + 1) : (fb ?? `<${name}?>`));
     return out
-      .replace(/calc\(\s*([\d.]+)\s*\*\s*([\d.]+)\s*\)/g, (_, a, b) => String(Number((a * b).toFixed(4))))
+      // --radius-scale/--space-scale turn literals into calc(Npx * M); keep the
+      // unit of the first operand (the only one tokens.css ever carries one).
+      .replace(/calc\(\s*([\d.]+)(px)?\s*\*\s*([\d.]+)(px)?\s*\)/g,
+        (_, a, aUnit, b, bUnit) => String(Number((a * b).toFixed(4))) + (aUnit || bUnit || ''))
       .replace(/(?<![\w#.])(\d+\.\d+)(?!\d)/g, n => String(Number(n)))
       .replace(/\s+/g, ' ').trim().toLowerCase();
   };
