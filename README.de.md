@@ -177,8 +177,8 @@ hinzufügen und Yuvomi als App installieren ([Schritte](https://yuvomi.cloud/ins
 läuft auf amd64 und arm64 (Raspberry Pi 4/5); Yuvomi braucht einen Port, standardmäßig 3000.
 
 ```bash
-curl -O https://raw.githubusercontent.com/ulsklyc/yuvomi/main/docker-compose.yml
-curl -O https://raw.githubusercontent.com/ulsklyc/yuvomi/main/.env.example
+curl -O https://raw.githubusercontent.com/B-o-s-s-e/yuvomi/main/docker-compose.yml
+curl -O https://raw.githubusercontent.com/B-o-s-s-e/yuvomi/main/.env.example
 cp .env.example .env
 openssl rand -hex 32   # SESSION_SECRET
 openssl rand -hex 32   # DB_ENCRYPTION_KEY
@@ -219,7 +219,7 @@ und die [Installationsanleitung im Repository](docs/installation.md).
   legt euer Admin-Konto an.
 
   ```bash
-  git clone https://github.com/ulsklyc/yuvomi.git && cd yuvomi
+  git clone https://github.com/B-o-s-s-e/yuvomi.git && cd yuvomi
   node tools/installer/install-server.js
   ```
 
