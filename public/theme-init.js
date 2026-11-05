@@ -97,6 +97,14 @@
   } catch (e) { /* Storage nicht verfuegbar → Standardabstand */ }
 })();
 
+(function() {
+  try {
+    var textSize = localStorage.getItem('yuvomi-text-size');
+    document.documentElement.setAttribute('data-text-size',
+      ['large', 'xlarge'].indexOf(textSize) !== -1 ? textSize : 'standard');
+  } catch (e) { /* Storage nicht verfuegbar → Standard-Textgroesse */ }
+})();
+
 // DER WAND-MODUS GEHOERT ZUM ERSTZUSTAND, ALSO HIERHER.
 //
 // Er blendet Sidebar und Tab-Leiste aus und uebernimmt die ganze Flaeche. Ohne

@@ -142,7 +142,7 @@ export const SETTINGS_SECTIONS = freezeEntries([
     labelKey: 'settings.pageAppearance',
     descriptionKey: 'settings.pageAppearanceDescription',
     options: [
-      { key: 'settings.sectionDesign', also: ['settings.themeSystem', 'settings.themeLight', 'settings.themeDark', 'settings.colorPalette', 'settings.themePresets', 'settings.cornerStyle', 'settings.density'], synonyms: 'settingsSynonyms.theme' },
+      { key: 'settings.sectionDesign', also: ['settings.themeSystem', 'settings.themeLight', 'settings.themeDark', 'settings.colorPalette', 'settings.themePresets', 'settings.cornerStyle', 'settings.density', 'settings.textSize'], synonyms: 'settingsSynonyms.theme' },
       'settings.localeLabel',
       'settings.dataLanguageLabel',
       'settings.regionLabel',

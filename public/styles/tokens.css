@@ -3237,3 +3237,28 @@
 :root[data-density="spacious"] {
   --space-scale: 1.25;
 }
+
+/* --------------------------------------------------------
+ * Textgroesse (Text size)
+ *
+ * Ein dritter, unabhaengiger Regler: skaliert die Root-Schriftgroesse,
+ * genau wie reset.css es schon fuer die Browser-/OS-Schriftgroessen-
+ * Einstellung tut (WCAG 1.4.4) - alle --text-*/--type-*-Tokens sind in
+ * rem notiert und folgen automatisch mit. --space-*/--radius-* bleiben
+ * unberuehrt (beide in px). Nur GROESSER als der Standard, nie kleiner:
+ * --text-base (1rem) ist die iOS-Zoom-Schwelle fuer Eingabefelder -
+ * schrumpfte sie unter 16px, zoomt iOS beim Fokussieren ungewollt hinein
+ * (siehe reset.css-Kommentar "100% statt 16px"). "Standard" steht hier
+ * nur explizit, damit das data-Attribut immer einen aktiven Treffer hat.
+ * -------------------------------------------------------- */
+:root[data-text-size="standard"] {
+  font-size: 100%;
+}
+
+:root[data-text-size="large"] {
+  font-size: 115%;
+}
+
+:root[data-text-size="xlarge"] {
+  font-size: 130%;
+}

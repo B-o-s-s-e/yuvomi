@@ -5897,6 +5897,10 @@ window.yuvomi = {
     if (!['compact', 'comfortable', 'spacious'].includes(value)) return;
     document.documentElement.setAttribute('data-density', value);
   },
+  applyTextSize: (value) => {
+    if (!['standard', 'large', 'xlarge'].includes(value)) return;
+    document.documentElement.setAttribute('data-text-size', value);
+  },
   restoreThemeColor: () => {
     updateThemeColorForRoute(currentRoute());
   },

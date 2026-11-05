@@ -78,6 +78,17 @@ const DENSITY_OPTIONS = [
   { value: 'spacious', labelKey: 'settings.densitySpacious' },
 ];
 
+// Textgroesse: skaliert die Root-Schriftgroesse (tokens.css), damit alle
+// rem-basierten --text-*/--type-*-Tokens mitfolgen - --space-*/--radius-*
+// (in px) bleiben unberuehrt. Nur GROESSER als Standard: --text-base ist die
+// iOS-Zoom-Schwelle fuer Eingabefelder (1rem = 16px), ein Schritt nach UNTEN
+// wuerde sie unterschreiten und ungewolltes Zoom-beim-Fokussieren ausloesen.
+const TEXT_SIZE_OPTIONS = [
+  { value: 'standard', labelKey: 'settings.textSizeStandard' },
+  { value: 'large', labelKey: 'settings.textSizeLarge' },
+  { value: 'xlarge', labelKey: 'settings.textSizeXLarge' },
+];
+
 // Schnellauswahl: bündelt Palette + Eckenstil + Abstand in einem Klick, wie
 // die vorgefertigten Themes anderer Design-Systeme (z.B. PrimeNG). Jeder
 // Regler darunter bleibt trotzdem einzeln verstellbar - eine Voreinstellung
@@ -144,6 +155,11 @@ function currentShape() {
 function currentDensity() {
   const stored = safeStorageGet('yuvomi-density', 'comfortable');
   return DENSITY_OPTIONS.some(({ value }) => value === stored) ? stored : 'comfortable';
+}
+
+function currentTextSize() {
+  const stored = safeStorageGet('yuvomi-text-size', 'standard');
+  return TEXT_SIZE_OPTIONS.some(({ value }) => value === stored) ? stored : 'standard';
 }
 
 function currentPreset() {
@@ -529,6 +545,7 @@ function renderPage(container, preferences, isAdmin) {
   const palette = currentPalette();
   const shape = currentShape();
   const density = currentDensity();
+  const textSize = currentTextSize();
   const preset = currentPreset();
   const activeRegion = resolveRegion(preferences);
   const customHidden = isAdmin && activeRegion !== CUSTOM_REGION;
@@ -621,6 +638,22 @@ function renderPage(container, preferences, isAdmin) {
             <div class="segmented settings-segmented" id="density-toggle" role="radiogroup" aria-label="${esc(t('settings.density'))}">
               ${DENSITY_OPTIONS.map(({ value, labelKey }) => {
                 const on = density === value;
+                return `<button type="button" class="segmented__item${on ? ' is-active' : ''}" role="radio"
+                  data-tab-id="${value}" aria-checked="${on}" tabindex="${on ? '0' : '-1'}">
+                  ${esc(t(labelKey))}
+                </button>`;
+              }).join('')}
+            </div>
+          </div>
+        </div>
+        <div class="settings-setting-row settings-setting-row--stacked">
+          <div class="settings-setting-row__copy">
+            <div class="settings-setting-row__label">${esc(t('settings.textSize'))}</div>
+          </div>
+          <div class="settings-setting-row__control">
+            <div class="segmented settings-segmented" id="text-size-toggle" role="radiogroup" aria-label="${esc(t('settings.textSize'))}">
+              ${TEXT_SIZE_OPTIONS.map(({ value, labelKey }) => {
+                const on = textSize === value;
                 return `<button type="button" class="segmented__item${on ? ' is-active' : ''}" role="radio"
                   data-tab-id="${value}" aria-checked="${on}" tabindex="${on ? '0' : '-1'}">
                   ${esc(t(labelKey))}
@@ -820,6 +853,20 @@ function applyDensity(value) {
     }
   }
   document.documentElement.setAttribute('data-density', value);
+}
+
+function applyTextSize(value) {
+  if (!TEXT_SIZE_OPTIONS.some(({ value: option }) => option === value)) return;
+  safeStorageSet('yuvomi-text-size', value);
+  if (window.yuvomi?.applyTextSize) {
+    try {
+      window.yuvomi.applyTextSize(value);
+      return;
+    } catch {
+      // Fall back to applying the attribute directly when the router is unavailable.
+    }
+  }
+  document.documentElement.setAttribute('data-text-size', value);
 }
 
 // Wendet die drei Werte einer Voreinstellung in einem Zug an und zeichnet die
@@ -1160,6 +1207,15 @@ function bindEvents(container, user) {
     activeClass: 'is-active',
     mode: 'select',
     onChange: (value) => applyDensity(value),
+  });
+
+  const textSizeToggle = container.querySelector('#text-size-toggle');
+  if (textSizeToggle) attachSegmentIndicator(textSizeToggle);
+  wireTablist(textSizeToggle, {
+    activeId: currentTextSize(),
+    activeClass: 'is-active',
+    mode: 'select',
+    onChange: (value) => applyTextSize(value),
   });
 
   bindDeviceDisplay(container);

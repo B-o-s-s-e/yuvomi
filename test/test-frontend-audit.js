@@ -24281,6 +24281,51 @@ test('jede Locale beschriftet Voreinstellungen, Eckenstil und Abstand', () => {
   }
 });
 
+test('Textgroesse ist vor dem ersten Bild gespeichert und in den Einstellungen erreichbar', () => {
+  const startup = read('../public/theme-init.js');
+  const settings = read('../public/settings/pages/personal-appearance.js');
+  const router = read('../public/router.js');
+
+  assert.match(startup, /localStorage\.getItem\('yuvomi-text-size'\)/);
+  assert.match(startup, /setAttribute\('data-text-size',/);
+  assert.match(settings, /id="text-size-toggle" role="radiogroup"/);
+  assert.match(settings, /safeStorageSet\('yuvomi-text-size', value\)/);
+  assert.match(router, /applyTextSize: \(value\) =>/);
+  for (const size of ['standard', 'large', 'xlarge']) {
+    assert.ok(settings.includes(`value: '${size}'`), `Einstellungen fehlen für Textgröße ${size}`);
+  }
+});
+
+test('jede Locale beschriftet die Textgroesse', () => {
+  const localeDirectory = new URL('../public/locales/', import.meta.url);
+  const localeFiles = readdirSync(localeDirectory).filter((file) => file.endsWith('.json'));
+  const keys = ['textSize', 'textSizeStandard', 'textSizeLarge', 'textSizeXLarge'];
+  for (const file of localeFiles) {
+    const locale = JSON.parse(readFileSync(new URL(file, localeDirectory), 'utf8'));
+    for (const key of keys) {
+      assert.ok(locale.settings[key], `${file} fehlt settings.${key}`);
+    }
+  }
+});
+
+test('die Textgroesse skaliert nur die Root-Schriftgroesse, nie unter die iOS-Zoom-Schwelle von --text-base', () => {
+  const css = read('../public/styles/tokens.css');
+  assert.match(css, /:root\[data-text-size="standard"\]\s*\{\s*font-size:\s*100%;/);
+  assert.match(css, /:root\[data-text-size="large"\]\s*\{\s*font-size:\s*(\d+)%;/);
+  assert.match(css, /:root\[data-text-size="xlarge"\]\s*\{\s*font-size:\s*(\d+)%;/);
+  for (const size of ['standard', 'large', 'xlarge']) {
+    const m = css.match(new RegExp(`:root\\[data-text-size="${size}"\\]\\s*\\{\\s*font-size:\\s*(\\d+(?:\\.\\d+)?)%;`));
+    assert.ok(m, `data-text-size="${size}" fehlt`);
+    assert.ok(Number(m[1]) >= 100, `${size}: Textgröße darf nie unter 100% fallen (iOS-Zoom-Schwelle an Eingabefeldern, --text-base)`);
+  }
+  // --space-*/--radius-* duerfen nicht von der Textgroesse abhaengen - sie
+  // ist eine reine Root-font-size-Skalierung, keine dritte Skala-Variable.
+  for (const size of ['standard', 'large', 'xlarge']) {
+    const block = css.match(new RegExp(`:root\\[data-text-size="${size}"\\]\\s*\\{([^}]+)\\}`))?.[1] ?? '';
+    assert.doesNotMatch(block, /--space-scale|--radius-scale/, `data-text-size="${size}" darf keine Abstands-/Eckenstil-Skala setzen`);
+  }
+});
+
 test('--radius-scale und --space-scale lassen die Buttonkapsel und Touch-Ziele unberuehrt', () => {
   const css = read('../public/styles/tokens.css');
   assert.match(css, /--radius-full:\s*9999px;/, '--radius-full bleibt ein Literal, keine Skala');
